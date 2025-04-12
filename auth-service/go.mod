@@ -3,7 +3,7 @@ module github.com/kafanasyev97/go-microservices/auth-service
 go 1.23.6
 
 require (
-	github.com/kafanasyev97/go-microservices/proto/auth v0.0.0
+	github.com/kafanasyev97/go-microservices/proto v0.0.0
 	google.golang.org/grpc v1.71.1
 )
 
@@ -15,4 +15,4 @@ require (
 	google.golang.org/protobuf v1.36.6 // indirect
 )
 
-replace github.com/kafanasyev97/go-microservices/proto/auth => ../proto/auth
+replace github.com/kafanasyev97/go-microservices/proto => ../proto
