@@ -15,7 +15,8 @@ func main() {
 	}
 
 	grpcServer := grpc.NewServer()
-	pb.RegisterAuthServiceServer(grpcServer, &AuthServer{})
+	authServer := NewAuthServer()
+	pb.RegisterAuthServiceServer(grpcServer, authServer)
 
 	log.Println("Auth Service запущен на порту 50051")
 	if err := grpcServer.Serve(lis); err != nil {

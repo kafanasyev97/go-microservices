@@ -17,17 +17,35 @@ func main() {
 	defer conn.Close()
 
 	client := pb.NewAuthServiceClient(conn)
-
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	defer cancel()
 
-	resp, err := client.Login(ctx, &pb.LoginRequest{
-		Username: "testuser",
-		Password: "secret",
+	// Register
+	regResp, err := client.Register(ctx, &pb.RegisterRequest{
+		Username: "john",
+		Password: "pass123",
 	})
 	if err != nil {
-		log.Fatalf("ошибка при логине: %v", err)
+		log.Fatalf("ошибка регистрации: %v", err)
 	}
+	log.Printf("Зарегистрирован пользователь с ID: %s\n", regResp.UserId)
 
-	log.Printf("Получен токен: %s", resp.Token)
+	// Login
+	loginResp, err := client.Login(ctx, &pb.LoginRequest{
+		Username: "john",
+		Password: "pass123",
+	})
+	if err != nil {
+		log.Fatalf("ошибка логина: %v", err)
+	}
+	log.Printf("Получен токен: %s\n", loginResp.Token)
+
+	// ValidateToken
+	validateResp, err := client.ValidateToken(ctx, &pb.ValidateTokenRequest{
+		Token: loginResp.Token,
+	})
+	if err != nil {
+		log.Fatalf("ошибка проверки токена: %v", err)
+	}
+	log.Printf("Токен валиден: %v, user_id: %s\n", validateResp.Valid, validateResp.UserId)
 }
