@@ -5,7 +5,8 @@ import (
 	"log"
 	"time"
 
-	pb "github.com/kafanasyev97/go-microservices/proto/auth"
+	// pb "github.com/kafanasyev97/go-microservices/proto/auth"
+	"github.com/kafanasyev97/auth-service/proto/github.com/kafanasyev97/go-microservices-proto/auth"
 	"google.golang.org/grpc"
 )
 
@@ -16,12 +17,12 @@ func main() {
 	}
 	defer conn.Close()
 
-	client := pb.NewAuthServiceClient(conn)
+	client := auth.NewAuthServiceClient(conn)
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	defer cancel()
 
 	// Register
-	regResp, err := client.Register(ctx, &pb.RegisterRequest{
+	regResp, err := client.Register(ctx, &auth.RegisterRequest{
 		Username: "john",
 		Password: "pass123",
 	})
@@ -31,7 +32,7 @@ func main() {
 	log.Printf("Зарегистрирован пользователь с ID: %s\n", regResp.UserId)
 
 	// Login
-	loginResp, err := client.Login(ctx, &pb.LoginRequest{
+	loginResp, err := client.Login(ctx, &auth.LoginRequest{
 		Username: "john",
 		Password: "pass123",
 	})
@@ -41,7 +42,7 @@ func main() {
 	log.Printf("Получен токен: %s\n", loginResp.Token)
 
 	// ValidateToken
-	validateResp, err := client.ValidateToken(ctx, &pb.ValidateTokenRequest{
+	validateResp, err := client.ValidateToken(ctx, &auth.ValidateTokenRequest{
 		Token: loginResp.Token,
 	})
 	if err != nil {

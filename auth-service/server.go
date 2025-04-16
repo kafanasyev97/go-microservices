@@ -6,11 +6,12 @@ import (
 	"strconv"
 	"sync"
 
-	pb "github.com/kafanasyev97/go-microservices/proto/auth"
+	"github.com/kafanasyev97/auth-service/proto/github.com/kafanasyev97/go-microservices-proto/auth"
+	// pb "github.com/kafanasyev97/go-microservices/proto/auth"
 )
 
 type AuthServer struct {
-	pb.UnimplementedAuthServiceServer
+	auth.UnimplementedAuthServiceServer
 
 	mu        sync.Mutex
 	users     map[string]string // username -> password
@@ -25,7 +26,7 @@ func NewAuthServer() *AuthServer {
 	}
 }
 
-func (s *AuthServer) Register(ctx context.Context, req *pb.RegisterRequest) (*pb.RegisterResponse, error) {
+func (s *AuthServer) Register(ctx context.Context, req *auth.RegisterRequest) (*auth.RegisterResponse, error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
@@ -38,10 +39,10 @@ func (s *AuthServer) Register(ctx context.Context, req *pb.RegisterRequest) (*pb
 	userId := "user_" + strconv.Itoa(s.userIDSeq)
 
 	s.users[req.Username] = req.Password
-	return &pb.RegisterResponse{UserId: userId}, nil
+	return &auth.RegisterResponse{UserId: userId}, nil
 }
 
-func (s *AuthServer) Login(ctx context.Context, req *pb.LoginRequest) (*pb.LoginResponse, error) {
+func (s *AuthServer) Login(ctx context.Context, req *auth.LoginRequest) (*auth.LoginResponse, error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
@@ -53,7 +54,7 @@ func (s *AuthServer) Login(ctx context.Context, req *pb.LoginRequest) (*pb.Login
 	token := "dummy-token-" + req.Username
 	s.tokens[token] = req.Username
 
-	return &pb.LoginResponse{Token: token}, nil
+	return &auth.LoginResponse{Token: token}, nil
 
 	// простая заглушка
 	// return &pb.LoginResponse{
@@ -61,16 +62,16 @@ func (s *AuthServer) Login(ctx context.Context, req *pb.LoginRequest) (*pb.Login
 	// }, nil
 }
 
-func (s *AuthServer) ValidateToken(ctx context.Context, req *pb.ValidateTokenRequest) (*pb.ValidateTokenResponse, error) {
+func (s *AuthServer) ValidateToken(ctx context.Context, req *auth.ValidateTokenRequest) (*auth.ValidateTokenResponse, error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
 	user, exists := s.tokens[req.Token]
 	if !exists {
-		return &pb.ValidateTokenResponse{Valid: false}, nil
+		return &auth.ValidateTokenResponse{Valid: false}, nil
 	}
 
-	return &pb.ValidateTokenResponse{
+	return &auth.ValidateTokenResponse{
 		Valid:  true,
 		UserId: user,
 	}, nil
